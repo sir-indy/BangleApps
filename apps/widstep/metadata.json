@@ -1,6 +1,6 @@
 {
     "id": "widstep",
-    "name": "Pedometer widget",
+    "name": "Step counter widget",
     "version": "0.01",
     "description": "Step counter widget, narrow but clearly readable",
     "icon": "icons8-winter-boots-48.png",
