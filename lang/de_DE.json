@@ -181,7 +181,7 @@
     "alarm": {
         "//": "App-specific overrides",
         "rpt": "Wdh."
-    }
+    },
     "fuzzyw": {
         "//": "App-specific overrides",
         "*$1 o'clock": "*$1 uhr",
