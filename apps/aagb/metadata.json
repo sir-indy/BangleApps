@@ -1,0 +1,9 @@
+{ "id": "aabg",
+  "name": "AA Test GB Comms",
+  "shortName" : "AAGB",
+  "description": "A detailed description of my great app",
+  "tags": "gadgetbridge",
+  "storage": [
+    {"name":"aagb.boot.js","url":"boot.js"}
+  ],
+}
