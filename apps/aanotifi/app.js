@@ -53,6 +53,7 @@ exports.pushMessage = function(msg) {
     back : function() {
       Bangle.removeListener("swipe", onSwipe);
       print('BACK');
+      load();
     }
   });
 };
