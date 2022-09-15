@@ -1,4 +1,4 @@
 Bangle.on('notification', event=>{
   require('buzz').pattern('::');
-  require('aanotifi').pushMessage(event);
+  require('aanotifi.app.js').pushMessage(event);
 });
