@@ -1,1 +1,1 @@
-Bangle.on('notification', event=>{require('aanotifi.js').pushMessage(event);});
+Bangle.on('notification', event=>{require('aanotifi').pushMessage(event);});
