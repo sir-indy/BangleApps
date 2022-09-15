@@ -1,1 +1,4 @@
-Bangle.on('notification', event=>{require('aanotifi').pushMessage(event);});
+Bangle.on('notification', event=>{
+  require('buzz').pattern('::');
+  require('aanotifi').pushMessage(event);
+});
