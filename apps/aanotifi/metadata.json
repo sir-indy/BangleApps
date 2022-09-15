@@ -4,6 +4,7 @@
   "description": "A detailed description of my great app",
   "tags": "gadgetbridge",
   "storage": [
-    {"name":"aanotifi.app.js","url":"app.js"}
+    {"name":"aanotifi.app.js","url":"app.js"},
+    {"name":"aanotifi.boot.js","url":"boot.js"}
   ],
 }
