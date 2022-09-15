@@ -6,5 +6,5 @@
   "storage": [
     {"name":"aanotifi.app.js","url":"app.js"},
     {"name":"aanotifi.boot.js","url":"boot.js"}
-  ],
+  ]
 }
