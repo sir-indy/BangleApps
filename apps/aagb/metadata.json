@@ -2,10 +2,12 @@
   "name": "AA Test GB Comms",
   "shortName" : "AAGB",
   "version":"0.01",
+  "icon": "app.png",
   "description": "A detailed description of my great app",
   "supports" : ["BANGLEJS2"],
   "tags": "gadgetbridge",
   "storage": [
-    {"name":"aagb.boot.js","url":"boot.js"}
+    {"name":"aagb.boot.js","url":"boot.js"},
+    {"name":"aagb.img","url":"app-icon.js","evaluate":true}
   ]
 }
