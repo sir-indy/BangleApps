@@ -6,6 +6,7 @@
   "description": "A detailed description of my great app",
   "tags": "gadgetbridge",
   "supports" : ["BANGLEJS2"],
+  "dependencies" : { "aagb":"app" }
   "storage": [
     {"name":"aanotifi.app.js","url":"app.js"},
     {"name":"aanotifi.boot.js","url":"boot.js"},
