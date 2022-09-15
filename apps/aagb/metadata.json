@@ -5,6 +5,7 @@
   "icon": "app.png",
   "description": "A detailed description of my great app",
   "supports" : ["BANGLEJS2"],
+  "type":"bootloader",
   "tags": "gadgetbridge",
   "storage": [
     {"name":"aagb.boot.js","url":"boot.js"},
