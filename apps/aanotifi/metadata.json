@@ -1,8 +1,10 @@
 { "id": "aanotifi",
   "name": "AA Test Notifications",
   "shortName" : "AANotify",
+  "version":"0.01",
   "description": "A detailed description of my great app",
   "tags": "gadgetbridge",
+  "supports" : ["BANGLEJS2"],
   "storage": [
     {"name":"aanotifi.app.js","url":"app.js"},
     {"name":"aanotifi.boot.js","url":"boot.js"}
