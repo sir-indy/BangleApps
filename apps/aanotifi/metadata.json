@@ -1,0 +1,9 @@
+{ "id": "aanotifi",
+  "name": "AA Test Notifications",
+  "shortName" : "AANotify",
+  "description": "A detailed description of my great app",
+  "tags": "gadgetbridge",
+  "storage": [
+    {"name":"aanotifi.app.js","url":"app.js"}
+  ],
+}
