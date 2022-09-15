@@ -5,5 +5,5 @@
   "tags": "gadgetbridge",
   "storage": [
     {"name":"aagb.boot.js","url":"boot.js"}
-  ],
+  ]
 }
