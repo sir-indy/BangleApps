@@ -43,13 +43,13 @@ exports.pushMessage = function(msg) {
 
   var y_pos = 0;
 
-  print('OVERLAY MESSAGE');
+  console.log('OVERLAY MESSAGE');
   Bangle.setLCDOverlay(img, 0, y_pos);
   Bangle.setLocked(0);
   timeout = setTimeout(function() {clearMessage('timeout');}, 1000*60);
 
   function clearMessage(trigger) {
-    print('CLEAR', trigger);
+    console.log('CLEAR', trigger);
     Bangle.setLCDOverlay();
     //Bangle.removeListener("tap", clearMessage);
     Bangle.removeListener("drag", onDrag);
@@ -57,7 +57,7 @@ exports.pushMessage = function(msg) {
   }
   
   function onDrag(e) {
-    print(e, y_pos);
+    console.log(e, y_pos);
     y_pos += e.dy;
     Bangle.setLCDOverlay(img, 0, y_pos);
   }
