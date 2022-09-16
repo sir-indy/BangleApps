@@ -22,7 +22,7 @@ var img = null;
 var hideCallback = undefined;
 
 function onDrag(e) {
-  console.log(e, y_pos);
+  //console.log(e, y_pos);
   y_pos += e.dy;
   Bangle.setLCDOverlay(img, 0, y_pos);
 }
@@ -31,7 +31,7 @@ exports.show = function(options) {
   options = options || {};
   if (options.on===undefined) options.on = true;
   id = ("id" in options)?options.id:null;
-  console.log(options);
+  //console.log(options);
 
   var bodyFont = '12x20';
   g.setFont(bodyFont);
@@ -47,7 +47,7 @@ exports.show = function(options) {
   );
 
   var max_height = lines.length * 20 + y_pad;
-  print('MAX_HEIGHT', max_height);
+  //console.log('MAX_HEIGHT', max_height);
 
   lines = lines.join('\n');
 
@@ -59,7 +59,7 @@ exports.show = function(options) {
     .setBgColor(g.theme.bg)
     .drawString(lines, x_pad/2, y_pad/2);
 
-  console.log('OVERLAY MESSAGE');
+  //console.log('OVERLAY MESSAGE');
   Bangle.setLCDOverlay(img, 0, y_pos);
   timeout = setTimeout(exports.hide, 1000*60);
   
