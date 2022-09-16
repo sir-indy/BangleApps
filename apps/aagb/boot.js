@@ -33,12 +33,19 @@
           event.id = lastMsg.id;
         }
         lastMsg = event;
-        Bangle.emit('notification', event);
+        //Bangle.emit('notification', event);
+        require('notify').show(event)
       },
       // {t:"notify~",id:int, title:string} // modified
-      "notify~" : function() { event.t="modify";Bangle.emit('notification', event); },
+      "notify~" : function() {
+        event.t="modify";
+        //Bangle.emit('notification', event);
+      },
       // {t:"notify-",id:int} // remove
-      "notify-" : function() { event.t="remove";Bangle.emit('notification', event); },
+      "notify-" : function() {
+        event.t="remove";
+        //Bangle.emit('notification', event);
+      },
       // {t:"find", n:bool} // find my phone
       "find" : function() {
         if (Bangle.findDeviceInterval) {

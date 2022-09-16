@@ -3,13 +3,10 @@
   "shortName" : "AANotify",
   "version":"0.01",
   "icon": "app.png",
-  "description": "A detailed description of my great app",
-  "tags": "gadgetbridge",
+  "description": "Notifications in an overlay",
+  "type": "notify",
   "supports" : ["BANGLEJS2"],
-  "dependencies" : { "aagb":"app" },
   "storage": [
-    {"name":"aanotifi.app.js","url":"app.js"},
-    {"name":"aanotifi.boot.js","url":"boot.js"},
-    {"name":"aanotifi.img","url":"app-icon.js","evaluate":true}
+    {"name":"notify","url":"notify.js"}
   ]
 }
