@@ -33,18 +33,17 @@
           event.id = lastMsg.id;
         }
         lastMsg = event;
-        //Bangle.emit('notification', event);
-        require('notify').show(event)
-        require('buzz').pattern(':')
+        require('notify').show(event);
+        require('buzz').pattern(':');
 
-        var mes = require("Storage").readJSON("android.messages.json",true);
-        if (!mes || !Array.isArray(mes)) mes = [];
-        var i = mes.findIndex(e=>e.id==event.id);
-        if(i<0)
-          mes.push(event);
-        else
-          mes[i] = event;
-        require("Storage").writeJSON("android.messages.json", cal);
+        //var mes = require("Storage").readJSON("android.messages.json",true);
+        //if (!mes || !Array.isArray(mes)) mes = [];
+        //var i = mes.findIndex(e=>e.id==event.id);
+        //if(i<0)
+        //  mes.push(event);
+        //else
+        //  mes[i] = event;
+        //require("Storage").writeJSON("android.messages.json", cal);
 
         
       },
@@ -52,17 +51,17 @@
       "notify~" : function() {
         event.t="modify";
         //Bangle.emit('notification', event);
-        require('notify').show(event)
+        //require('notify').show(event)
       },
       // {t:"notify-",id:int} // remove
       "notify-" : function() {
         event.t="remove";
         //Bangle.emit('notification', event);
-        var msg = require("Storage").readJSON("android.messages.json",true);
-        //if any of those happen we are out of sync!
-        if (!msg || !Array.isArray(msg)) return;
-        msg = msg.filter(e=>e.id!=event.id);
-        require("Storage").writeJSON("android.messages.json", msg);
+        ///var msg = require("Storage").readJSON("android.messages.json",true);
+        ////if any of those happen we are out of sync!
+        //if (!msg || !Array.isArray(msg)) return;
+        //msg = msg.filter(e=>e.id!=event.id);
+        //require("Storage").writeJSON("android.messages.json", msg);
         require('notify').hide(event)
       },
       // {t:"find", n:bool} // find my phone
