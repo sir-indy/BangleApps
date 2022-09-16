@@ -18,6 +18,7 @@
 
 var y_pos = 0;
 var id = null;
+var img = null;
 var hideCallback = undefined;
 
 function onDrag(e) {
@@ -50,7 +51,7 @@ exports.show = function(options) {
 
   lines = lines.join('\n');
 
-  var img = Graphics.createArrayBuffer(g.getWidth(), max_height, 8)
+  img = Graphics.createArrayBuffer(g.getWidth(), max_height, 8)
     .setColor(g.theme.bg2)
     .fillRect(0, 0, g.getWidth(), 20 * titleCnt)
     .setColor(g.theme.fg)
@@ -60,7 +61,7 @@ exports.show = function(options) {
 
   console.log('OVERLAY MESSAGE');
   Bangle.setLCDOverlay(img, 0, y_pos);
-  timeout = setTimeout(function() {clearMessage('timeout');}, 1000*60);
+  timeout = setTimeout(exports.hide, 1000*60);
   
     //Bangle.on('tap', clearMessage);
   Bangle.on('drag', onDrag);

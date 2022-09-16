@@ -40,11 +40,13 @@
       "notify~" : function() {
         event.t="modify";
         //Bangle.emit('notification', event);
+        require('notify').show(event)
       },
       // {t:"notify-",id:int} // remove
       "notify-" : function() {
         event.t="remove";
         //Bangle.emit('notification', event);
+        require('notify').hide(event)
       },
       // {t:"find", n:bool} // find my phone
       "find" : function() {
