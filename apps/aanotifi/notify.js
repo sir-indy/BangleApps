@@ -37,10 +37,10 @@ function onDrag(e) {
   if (max_scroll > 0) {
     Bangle.setLCDOverlay(img, 0, y_pos);
   } else {
-    console.log(e, y_pos);
     //img.scroll(0, e.dy);
-    Bangle.setLCDOverlay(img, 0, y_pos);
+    Bangle.setLCDOverlay(img, 0, 0);
   }
+  //console.log('DONE DRAG');
 }
 
 function onSwipe(lr, ud) {
@@ -57,12 +57,12 @@ exports.show = function(options) {
   console.log(options);
 
   if (options.on) { Bangle.setLocked(false); }
-
+  
   var bodyFont = 'Vector20'; // 12x20
-  g.setFont(bodyFont);
   var x_pad = 10, y_pad = 10;
-
   var lines = [];
+  g.setFont(bodyFont);
+
   lines = g.wrapString(options.title||'', g.getWidth()-x_pad);
   var titleCnt = lines.length;
 
@@ -77,10 +77,11 @@ exports.show = function(options) {
   console.log('MAX SCROLL', max_scroll);
 
   lines = lines.join('\n');
-
+  var title_height = g.getFontHeight() * titleCnt + y_pad/2 - 1;
+  
   img = Graphics.createArrayBuffer(g.getWidth(), max_height, 8)
     .setColor(g.theme.bg2)
-    .fillRect(0, 0, g.getWidth(), g.getFontHeight() * titleCnt + y_pad/2 - 1)
+    .fillRect(0, 0, g.getWidth(), title_height)
     .setColor(g.theme.fg)
     .setFont(bodyFont)
     .setBgColor(g.theme.bg)
