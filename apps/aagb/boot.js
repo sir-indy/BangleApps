@@ -1,7 +1,11 @@
-// 3 new emits
-// notification
+// 2 new emits
 // musicnotifi
 // phonecall
+/*
+GB({"t":"notify","id":1575479849,"src":"Hangouts","title":"A Name","body":"message contents"})
+GB({t:"notify~",id:1575479849, title:"A modified name"})
+GB({t:"notify-",id:1575479849})
+*/
 
 (function() {
   function gbSend(message) {
@@ -11,10 +15,13 @@
   var lastMsg;
 
   var settings = require("Storage").readJSON("aagb.settings.json",1)||{};
+  
+  var messageFile = "android.messages.json";
+  var calendarFile = "android.calendar.json";
   //default alarm settings
   if (settings.rp == undefined) settings.rp = true;
   if (settings.as == undefined) settings.as = true;
-  if (settings.vibrate == undefined) settings.vibrate = "..";
+  if (settings.vibrate == undefined) settings.vibrate = "::";
   require('Storage').writeJSON("aagb.settings.json", settings);
   var _GB = global.GB;
   global.GB = (event) => {
@@ -25,7 +32,7 @@
     var HANDLERS = {
       // {t:"notify",id:int, src,title,subject,body,sender,tel:string} add
       "notify" : function() {
-        Object.assign(event,{t:"add",positive:true, negative:true});
+        //Object.assign(event,{t:"add",positive:true, negative:true});
         // Detect a weird GadgetBridge bug and fix it
         // For some reason SMS messages send two GB notifications, with different sets of info
         if (lastMsg && event.body == lastMsg.body && lastMsg.src == undefined && event.src == "Messages") {
@@ -34,35 +41,38 @@
         }
         lastMsg = event;
         require('notify').show(event);
-        require('buzz').pattern(':');
+        require('buzz').pattern(settings.vibrate);
 
-        //var mes = require("Storage").readJSON("android.messages.json",true);
-        //if (!mes || !Array.isArray(mes)) mes = [];
-        //var i = mes.findIndex(e=>e.id==event.id);
-        //if(i<0)
-        //  mes.push(event);
-        //else
-        //  mes[i] = event;
-        //require("Storage").writeJSON("android.messages.json", cal);
+        var msg = require("Storage").readJSON(messageFile,true);
+        if (!msg || !Array.isArray(msg)) msg = [];
+        var i = msg.findIndex(e=>e.id==event.id);
+        if(i<0)
+          msg.push(event);
+        else
+          msg[i] = event;
+        require("Storage").writeJSON(messageFile, msg);
 
-        
       },
       // {t:"notify~",id:int, title:string} // modified
       "notify~" : function() {
-        event.t="modify";
-        //Bangle.emit('notification', event);
-        //require('notify').show(event)
+        var msg = require("Storage").readJSON(messageFile,true);
+        var i = msg.findIndex(e=>e.id==event.id);
+        if(i>=0) {
+          Object.assign(msg[i], event);
+          require("Storage").writeJSON(messageFile, msg);
+          require('notify').show(msg[i]);
+          require('buzz').pattern(settings.vibrate);
+        }
       },
       // {t:"notify-",id:int} // remove
       "notify-" : function() {
-        event.t="remove";
-        //Bangle.emit('notification', event);
-        ///var msg = require("Storage").readJSON("android.messages.json",true);
-        ////if any of those happen we are out of sync!
-        //if (!msg || !Array.isArray(msg)) return;
-        //msg = msg.filter(e=>e.id!=event.id);
-        //require("Storage").writeJSON("android.messages.json", msg);
-        require('notify').hide(event)
+        //event.t="remove";
+        require('notify').hide(event);
+        var msg = require("Storage").readJSON(messageFile,true);
+        //if any of those happen we are out of sync!
+        if (!msg || !Array.isArray(msg)) return;
+        msg = msg.filter(e=>e.id!=event.id);
+        require("Storage").writeJSON(messageFile, msg);
       },
       // {t:"find", n:bool} // find my phone
       "find" : function() {
@@ -121,32 +131,30 @@
         sched.setAlarms(alarms);
         sched.reload();
       },
-      //TODO perhaps move those in a library (like messages), used also for viewing events?
-      //simple package with events all together
       "calendarevents" : function() {
-        require("Storage").writeJSON("android.calendar.json", event.events);
+        require("Storage").writeJSON(calendarFile, event.events);
       },
       //add and remove events based on activity on phone (pebble-like)
       "calendar" : function() {
-        var cal = require("Storage").readJSON("android.calendar.json",true);
+        var cal = require("Storage").readJSON(calendarFile,true);
         if (!cal || !Array.isArray(cal)) cal = [];
         var i = cal.findIndex(e=>e.id==event.id);
         if(i<0)
           cal.push(event);
         else
           cal[i] = event;
-        require("Storage").writeJSON("android.calendar.json", cal);
+        require("Storage").writeJSON(calendarFile, cal);
       },
       "calendar-" : function() {
-        var cal = require("Storage").readJSON("android.calendar.json",true);
+        var cal = require("Storage").readJSON(calendarFile,true);
         //if any of those happen we are out of sync!
         if (!cal || !Array.isArray(cal)) return;
         cal = cal.filter(e=>e.id!=event.id);
-        require("Storage").writeJSON("android.calendar.json", cal);
+        require("Storage").writeJSON(calendarFile, cal);
       },
       //triggered by GB, send all ids
       "force_calendar_sync_start" : function() {
-          var cal = require("Storage").readJSON("android.calendar.json",true);
+          var cal = require("Storage").readJSON(calendarFile,true);
           if (!cal || !Array.isArray(cal)) cal = [];
           gbSend({t:"force_calendar_sync", ids: cal.map(e=>e.id)});
       },
@@ -202,7 +210,7 @@
   NRF.on("connect", () => setTimeout(sendBattery, 2000));
   Bangle.on("charging", sendBattery);
   if (!settings.keep)
-    NRF.on("disconnect", () => console.log("clearAll()")); // remove all messages on disconnect
+    NRF.on("disconnect", () => {require("Storage").writeJSON(messageFile, []);}); // remove all messages on disconnect
   setInterval(sendBattery, 10*60*1000);
   // Health tracking
   Bangle.on('health', health=>{
@@ -220,5 +228,5 @@
     // error/warn here?
   };
   // remove settings object so it's not taking up RAM
-  delete settings;
+  //delete settings;
 })();
