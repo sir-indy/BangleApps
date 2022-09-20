@@ -1,5 +1,10 @@
-// GB({"t":"notify","id":1575479849,"src":"Hangouts","title":"A Name","body":"Hello I am a long message wobble wobble wobble flamingo temperature diskette Hello I am a long message wobble wobble wobble flamingo temperature diskette"})
+/**
 
+GB({"t":"notify","id":1575479849,"src":"Hangouts","title":"A Name","body":"Hello I am a long message wobble wobble wobble flamingo temperature diskette Hello I am a long message wobble wobble wobble flamingo temperature diskette"})
+
+GB({"t":"notify","id":4876532554,"src":"Whatsapp","title":"A Name","body":"Short Message", "subject":"Short Subject"})
+
+*/
 /**
  options = {
    on : bool // turn screen on, default true
@@ -16,27 +21,46 @@
  }
 */
 
-var y_pos = 0;
-var id = null;
-var img = null;
-var hideCallback = undefined;
+const clampNumber = (num, a, b) => Math.max(Math.min(num, Math.max(a, b)), Math.min(a, b));
+
+var y_pos;
+var id;
+var img;
+var hideCallback;
+var max_scroll;
+var timeout;
 
 function onDrag(e) {
   //console.log(e, y_pos);
   y_pos += e.dy;
-  Bangle.setLCDOverlay(img, 0, y_pos);
+  y_pos = clampNumber(y_pos, 0, max_scroll);
+  if (max_scroll > 0) {
+    Bangle.setLCDOverlay(img, 0, y_pos);
+  } else {
+    console.log(e, y_pos);
+    //img.scroll(0, e.dy);
+    Bangle.setLCDOverlay(img, 0, y_pos);
+  }
+}
+
+function onSwipe(lr, ud) {
+  if (lr) {
+    exports.hide({'id':id});
+  }
 }
 
 exports.show = function(options) {
+  if (timeout) { exports.hide(); } // clear any existing notification
   options = options || {};
   if (options.on===undefined) options.on = true;
   id = ("id" in options)?options.id:null;
-  //console.log(options);
+  console.log(options);
 
-  var bodyFont = '12x20';
+  if (options.on) { Bangle.setLocked(false); }
+
+  var bodyFont = 'Vector20'; // 12x20
   g.setFont(bodyFont);
   var x_pad = 10, y_pad = 10;
-  var timeout;
 
   var lines = [];
   lines = g.wrapString(options.title||'', g.getWidth()-x_pad);
@@ -46,26 +70,31 @@ exports.show = function(options) {
     g.wrapString(options.body, g.getWidth()-x_pad)
   );
 
-  var max_height = lines.length * 20 + y_pad;
-  //console.log('MAX_HEIGHT', max_height);
+  var max_height = lines.length * g.getFontHeight() + y_pad;
+  max_scroll = g.getHeight() - max_height;
+  console.log('MAX_HEIGHT', max_height);
+  console.log('SCREEN HEIGHT', g.getHeight());
+  console.log('MAX SCROLL', max_scroll);
 
   lines = lines.join('\n');
 
   img = Graphics.createArrayBuffer(g.getWidth(), max_height, 8)
     .setColor(g.theme.bg2)
-    .fillRect(0, 0, g.getWidth(), 20 * titleCnt)
+    .fillRect(0, 0, g.getWidth(), g.getFontHeight() * titleCnt + y_pad/2 - 1)
     .setColor(g.theme.fg)
     .setFont(bodyFont)
     .setBgColor(g.theme.bg)
-    .drawString(lines, x_pad/2, y_pad/2);
+    .setFontAlign(0, -1)
+    .drawString(lines, g.getWidth()/2, y_pad/2);
 
   //console.log('OVERLAY MESSAGE');
+  y_pos = 0;
   Bangle.setLCDOverlay(img, 0, y_pos);
   timeout = setTimeout(exports.hide, 1000*60);
-  
-    //Bangle.on('tap', clearMessage);
+
+  Bangle.on('swipe', onSwipe);
   Bangle.on('drag', onDrag);
-  
+
 };
 
 exports.hide = function(options) {
@@ -74,7 +103,7 @@ exports.hide = function(options) {
   if (hideCallback) hideCallback({id:id});
   hideCallback = undefined;
   Bangle.setLCDOverlay();
-  //Bangle.removeListener("tap", clearMessage);
-  Bangle.removeListener("drag", onDrag);
+  Bangle.removeListener('drag', onDrag);
+  Bangle.removeListener('swipe', onSwipe);
   clearTimeout(timeout);
-}
+};
