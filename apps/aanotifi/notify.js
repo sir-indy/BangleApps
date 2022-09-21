@@ -21,24 +21,25 @@ GB({"t":"notify","id":4876532554,"src":"Whatsapp","title":"A Name","body":"Short
  }
 */
 
-const clampNumber = (num, a, b) => Math.max(Math.min(num, Math.max(a, b)), Math.min(a, b));
-
 var y_pos;
 var id;
 var img;
 var hideCallback;
 var max_scroll;
 var timeout;
+var temp_img = Graphics.createArrayBuffer(g.getWidth(), g.getHeight(), 8);
 
 function onDrag(e) {
   //console.log(e, y_pos);
   y_pos += e.dy;
-  y_pos = clampNumber(y_pos, 0, max_scroll);
   if (max_scroll > 0) {
+    y_pos = E.clip(y_pos, 0, max_scroll);
     Bangle.setLCDOverlay(img, 0, y_pos);
   } else {
     //img.scroll(0, e.dy);
-    Bangle.setLCDOverlay(img, 0, 0);
+    y_pos = E.clip(y_pos, max_scroll, 0);
+    temp_img.drawImage(img, 0, y_pos);
+    Bangle.setLCDOverlay(temp_img, 0, 0);
   }
   //console.log('DONE DRAG');
 }
@@ -54,11 +55,11 @@ exports.show = function(options) {
   options = options || {};
   if (options.on===undefined) options.on = true;
   id = ("id" in options)?options.id:null;
-  console.log(options);
+  //console.log(options);
 
   if (options.on) { Bangle.setLocked(false); }
   
-  var bodyFont = 'Vector20'; // 12x20
+  var bodyFont = 'Vector19'; // 12x20, Vector20
   var x_pad = 10, y_pad = 10;
   var lines = [];
   g.setFont(bodyFont);
@@ -72,16 +73,20 @@ exports.show = function(options) {
 
   var max_height = lines.length * g.getFontHeight() + y_pad;
   max_scroll = g.getHeight() - max_height;
-  console.log('MAX_HEIGHT', max_height);
-  console.log('SCREEN HEIGHT', g.getHeight());
-  console.log('MAX SCROLL', max_scroll);
+  //console.log('MAX_HEIGHT', max_height);
+  //console.log('SCREEN HEIGHT', g.getHeight());
+  //console.log('MAX SCROLL', max_scroll);
 
   lines = lines.join('\n');
-  var title_height = g.getFontHeight() * titleCnt + y_pad/2 - 1;
+  var title_height = g.getFontHeight() * titleCnt;
   
   img = Graphics.createArrayBuffer(g.getWidth(), max_height, 8)
+    //.setColor(g.theme.bg2)
+    //.fillRect(0, 0, g.getWidth(), title_height)
     .setColor(g.theme.bg2)
-    .fillRect(0, 0, g.getWidth(), title_height)
+    .fillRect(0, 0, g.getWidth(), max_height)
+    .setColor(g.theme.bg)
+    .fillRect(x_pad/2, title_height + y_pad/2, g.getWidth() - x_pad, max_height - y_pad/2)
     .setColor(g.theme.fg)
     .setFont(bodyFont)
     .setBgColor(g.theme.bg)
