@@ -1,5 +1,5 @@
 (function(back) {
-    var FILE = "notifyover.settings.json";
+    var FILE = 'notifyover.settings.json';
     var font_options = ['6x15', '12x20', 'Vector19', 'Vector20'];
   
     var settings = Object.assign({
@@ -11,8 +11,8 @@
     }
   
     var mainmenu = {
-      "" : { "title" : /*LANG*/"Messages" },
-      "< Back" : back,
+      '' : { 'title' : /*LANG*/'Notify Overlay' },
+      '< Back' : back,
       /*LANG*/'Font': {
         value: 0 | font_options.indexOf(settings.font),
         min: 0, max: font_options.length - 1,
@@ -22,7 +22,7 @@
           writeSettings();
         }
       },
-      /*LANG*/'Test': require('notify').show({})
+      /*LANG*/'Test': ()=> require('notify').show({title:'A Test', body:'This is a test.'}),
     };
     E.showMenu(mainmenu);
   });

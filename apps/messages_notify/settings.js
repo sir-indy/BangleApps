@@ -13,7 +13,7 @@
     }
   
     var mainmenu = {
-      "" : { "title" : /*LANG*/"Messages" },
+      "" : { "title" : /*LANG*/"Messages Notify" },
       "< Back" : back,
       /*LANG*/'Vibrate': require("buzz_menu").pattern(settings().vibrate, v => updateSetting("vibrate", v))
     };
