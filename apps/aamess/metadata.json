@@ -5,7 +5,7 @@
   "icon": "icons8-chat-bubble-48.png",
   "description": "Replacement for the default messages app, shows notifications only",
   "supports" : ["BANGLEJS2"],
-  "type":"bootloader",
+  "type": "messages",
   "tags": "messages, notifications",
   "storage": [
     {"name":"messages","url":"lib.js"},
