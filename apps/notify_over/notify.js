@@ -28,6 +28,7 @@ var hideCallback;
 var max_scroll;
 var timeout;
 var temp_img = Graphics.createArrayBuffer(g.getWidth(), g.getHeight(), 8);
+var settings = require('Storage').readJSON("notifyover.settings.json", true) || {font: 'Vector19'}
 
 function onDrag(e) {
   //console.log(e, y_pos);
@@ -59,7 +60,7 @@ exports.show = function(options) {
 
   if (options.on) { Bangle.setLocked(false); }
   
-  var bodyFont = 'Vector19'; // 12x20, Vector20
+  var bodyFont = settings.font; // 12x20, Vector20
   var x_pad = 8, y_pad = 8;
   var lines = [];
   g.setFont(bodyFont);

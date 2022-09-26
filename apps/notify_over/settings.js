@@ -1,21 +1,28 @@
 (function(back) {
-    var settingsFile = "messnot.settings.json";
+    var FILE = "notifyover.settings.json";
+    var font_options = ['6x15', '12x20', 'Vector19', 'Vector20'];
   
-    function settings() {
-      let settings = require('Storage').readJSON(settingsFile, true) || {};
-      if (settings.vibrate===undefined) settings.vibrate=":";
-      return settings;
-    }
-    function updateSetting(setting, value) {
-      let settings = require('Storage').readJSON(settingsFile, true) || {};
-      settings[setting] = value;
-      require('Storage').writeJSON(settingsFile, settings);
+    var settings = Object.assign({
+      font: 'Vector19',
+    }, require('Storage').readJSON(FILE, true) || {});
+
+    function writeSettings() {
+      require('Storage').writeJSON(FILE, settings);
     }
   
     var mainmenu = {
       "" : { "title" : /*LANG*/"Messages" },
       "< Back" : back,
-      /*LANG*/'Vibrate': require("buzz_menu").pattern(settings().vibrate, v => updateSetting("vibrate", v))
+      /*LANG*/'Font': {
+        value: 0 | font_options.indexOf(settings.font),
+        min: 0, max: font_options.length - 1,
+        format: v => font_options[v],
+        onchange: v => {
+          settings.font = font_options[v];
+          writeSettings();
+        }
+      },
+      /*LANG*/'Test': require('notify').show({})
     };
     E.showMenu(mainmenu);
   });
