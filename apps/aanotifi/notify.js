@@ -60,7 +60,7 @@ exports.show = function(options) {
   if (options.on) { Bangle.setLocked(false); }
   
   var bodyFont = 'Vector19'; // 12x20, Vector20
-  var x_pad = 10, y_pad = 10;
+  var x_pad = 8, y_pad = 8;
   var lines = [];
   g.setFont(bodyFont);
 

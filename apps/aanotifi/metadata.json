@@ -2,7 +2,7 @@
   "name": "AA Test Notifications",
   "shortName" : "AANotify",
   "version":"0.01",
-  "icon": "app.png",
+  "icon": "icons8-popup-48.png",
   "description": "Notifications in an overlay",
   "type": "notify",
   "supports" : ["BANGLEJS2"],
