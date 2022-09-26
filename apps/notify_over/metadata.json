@@ -1,0 +1,16 @@
+{ "id": "notifyover",
+  "name": "Notifications Overlay",
+  "shortName" : "Notify Over",
+  "version":"0.01",
+  "icon": "icons8-popup-48.png",
+  "description": "Notifications in an overlay",
+  "type": "notify",
+  "supports" : ["BANGLEJS2"],
+  "storage": [
+    {"name":"notify","url":"notify.js"},
+    {"name":"notifyover.settings.js","url":"settings.js"}
+  ],
+  "data": [
+    {"name":"notifyover.settings.json"}
+  ]
+}

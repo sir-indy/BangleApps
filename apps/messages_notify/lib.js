@@ -1,5 +1,5 @@
 exports.pushMessage = function(event) {
-  var settings = require('Storage').readJSON("aamess.settings.json", true) || {}
+  var settings = require('Storage').readJSON("messnot.settings.json", true) || {}
   if (event.id == 'music') {
     Bangle.emit('music', event)
   } else if (event.id == 'call') {

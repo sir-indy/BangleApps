@@ -4,7 +4,7 @@
   "version": "0.51",
   "description": "App to display notifications from iOS and Gadgetbridge/Android",
   "icon": "app.png",
-  "type": "messages",
+  "type": "app",
   "tags": "tool,system",
   "supports": ["BANGLEJS","BANGLEJS2"],
   "readme": "README.md",

@@ -1,5 +1,5 @@
 (function(back) {
-    var settingsFile = "aamess.settings.json";
+    var settingsFile = "messnot.settings.json";
   
     function settings() {
       let settings = require('Storage').readJSON(settingsFile, true) || {};

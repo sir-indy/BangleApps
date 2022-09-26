@@ -1,17 +1,17 @@
-{ "id": "aamess",
+{ "id": "messnot",
   "name": "Messages Notify",
   "shortName" : "Messages Notify",
   "version":"0.01",
   "icon": "icons8-chat-bubble-48.png",
   "description": "Replacement for the default messages app, shows notifications only",
   "supports" : ["BANGLEJS2"],
-  "type": "messages",
+  "type": "settings",
   "tags": "messages, notifications",
   "storage": [
     {"name":"messages","url":"lib.js"},
-    {"name":"aamess.settings.js","url":"settings.js"}
+    {"name":"messnot.settings.js","url":"settings.js"}
   ],
   "data": [
-    {"name":"aamess.settings.json"}
+    {"name":"messnot.settings.json"}
   ]
 }
