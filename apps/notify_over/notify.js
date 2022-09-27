@@ -27,7 +27,7 @@ var img;
 var hideCallback;
 var max_scroll;
 var timeout;
-var temp_img = Graphics.createArrayBuffer(g.getWidth(), g.getHeight(), 8);
+var temp_img = Graphics.createArrayBuffer(g.getWidth(), g.getHeight(), 16, {msb:true});
 var settings;
 
 exports.loadSettings = function() {
@@ -80,7 +80,7 @@ exports.show = function(options) {
   lines = lines.join('\n');
   var title_height = g.getFontHeight() * titleCnt;
   
-  img = Graphics.createArrayBuffer(g.getWidth(), max_height, 8)
+  img = Graphics.createArrayBuffer(g.getWidth(), max_height, 16, {msb:true})
     .setColor(g.theme.bgH)
     .fillRect({x:0, y:0, x2:g.getWidth(), y2:max_height, r:pad_rect/2})
     .setColor(g.theme.bg)
