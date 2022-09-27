@@ -1,8 +1,8 @@
 /**
 
-GB({"t":"notify","id":1575479849,"src":"Hangouts","title":"A Name","body":"Hello I am a long message wobble wobble wobble flamingo temperature diskette Hello I am a long message wobble wobble wobble flamingo temperature diskette"})
+GB({'t':'notify','id':1575479849,'src':'Hangouts','title':'A Name','body':'Hello I am a long message wobble wobble wobble flamingo temperature diskette Hello I am a long message wobble wobble wobble flamingo temperature diskette'})
 
-GB({"t":"notify","id":4876532554,"src":"Whatsapp","title":"A Name","body":"Short Message", "subject":"Short Subject"})
+GB({'t':'notify','id':4876532554,'src':'Whatsapp','title':'A Name','body':'Short Message', 'subject':'Short Subject'})
 
 */
 /**
@@ -28,21 +28,24 @@ var hideCallback;
 var max_scroll;
 var timeout;
 var temp_img = Graphics.createArrayBuffer(g.getWidth(), g.getHeight(), 8);
-var settings = require('Storage').readJSON("notifyover.settings.json", true) || {font: 'Vector19'}
+var settings;
+
+exports.loadSettings = function() {
+  settings = require('Storage').readJSON('notifyover.settings.json', true) || {font: 'Vector19'};
+}
+exports.loadSettings();
 
 function onDrag(e) {
-  //console.log(e, y_pos);
   y_pos += e.dy;
   if (max_scroll > 0) {
     y_pos = E.clip(y_pos, 0, max_scroll);
     Bangle.setLCDOverlay(img, 0, y_pos);
   } else {
-    //img.scroll(0, e.dy);
+    //TODO: Replace this when setLCDOverlay negative position fixed
     y_pos = E.clip(y_pos, max_scroll, 0);
     temp_img.drawImage(img, 0, y_pos);
     Bangle.setLCDOverlay(temp_img, 0, 0);
   }
-  //console.log('DONE DRAG');
 }
 
 function onSwipe(lr, ud) {
@@ -55,46 +58,39 @@ exports.show = function(options) {
   if (timeout) { exports.hide(); } // clear any existing notification
   options = options || {};
   if (options.on===undefined) options.on = true;
-  id = ("id" in options)?options.id:null;
-  //console.log(options);
+  id = ('id' in options)?options.id:null;
 
   if (options.on) { Bangle.setLocked(false); }
   
-  var bodyFont = settings.font; // 12x20, Vector20
-  var x_pad = 8, y_pad = 8;
+  var bodyFont = settings.font;
+  var pad_rect = 8, pad_lines = 12;
   var lines = [];
   g.setFont(bodyFont);
 
-  lines = g.wrapString(options.title||'', g.getWidth()-x_pad);
+  lines = g.wrapString(options.title||'', g.getWidth()-pad_lines);
   var titleCnt = lines.length;
 
   lines = lines.concat(
-    g.wrapString(options.body, g.getWidth()-x_pad)
+    g.wrapString(options.body, g.getWidth()-pad_lines)
   );
 
-  var max_height = lines.length * g.getFontHeight() + y_pad;
+  var max_height = lines.length * g.getFontHeight() + pad_lines;
   max_scroll = g.getHeight() - max_height;
-  //console.log('MAX_HEIGHT', max_height);
-  //console.log('SCREEN HEIGHT', g.getHeight());
-  //console.log('MAX SCROLL', max_scroll);
 
   lines = lines.join('\n');
   var title_height = g.getFontHeight() * titleCnt;
   
   img = Graphics.createArrayBuffer(g.getWidth(), max_height, 8)
-    //.setColor(g.theme.bg2)
-    //.fillRect(0, 0, g.getWidth(), title_height)
-    .setColor(g.theme.bg2)
-    .fillRect(0, 0, g.getWidth(), max_height)
+    .setColor(g.theme.bgH)
+    .fillRect({x:0, y:0, x2:g.getWidth(), y2:max_height, r:pad_rect/2})
     .setColor(g.theme.bg)
-    .fillRect(x_pad/2, title_height + y_pad/2, g.getWidth() - x_pad, max_height - y_pad/2)
+    .fillRect({x:pad_rect/2, y:title_height + pad_rect/2, x2:g.getWidth() - pad_rect/2, y2:max_height - pad_rect/2, r:pad_rect/2})
     .setColor(g.theme.fg)
     .setFont(bodyFont)
     .setBgColor(g.theme.bg)
     .setFontAlign(0, -1)
-    .drawString(lines, g.getWidth()/2, y_pad/2);
+    .drawString(lines, g.getWidth()/2, pad_lines/2);
 
-  //console.log('OVERLAY MESSAGE');
   y_pos = 0;
   Bangle.setLCDOverlay(img, 0, y_pos);
   timeout = setTimeout(exports.hide, 1000*60);
@@ -106,7 +102,7 @@ exports.show = function(options) {
 
 exports.hide = function(options) {
   options = options||{};
-  if ("id" in options && options.id!==id) return;
+  if ('id' in options && options.id!==id) return;
   if (hideCallback) hideCallback({id:id});
   hideCallback = undefined;
   Bangle.setLCDOverlay();

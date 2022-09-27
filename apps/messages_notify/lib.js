@@ -1,5 +1,6 @@
 exports.pushMessage = function(event) {
-  var settings = require('Storage').readJSON("messnot.settings.json", true) || {}
+  var settings = require('Storage').readJSON("messnot.settings.json", true) || {};
+  settings.quiet = ((require('Storage').readJSON('setting.json',1)||{}).quiet);
   if (event.id == 'music') {
     Bangle.emit('music', event)
   } else if (event.id == 'call') {
@@ -9,7 +10,7 @@ exports.pushMessage = function(event) {
       case "add":
         require('notify').show(event);
         if (settings.pattern === undefined) { settings.pattern = ":"; } // pattern may be "", so we can't use || ":" here
-        require("buzz").pattern(settings.pattern);
+        if (!settings.quiet) require("buzz").pattern(settings.pattern);
         break;    
       case "remove":
         require('notify').hide(event);

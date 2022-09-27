@@ -8,6 +8,7 @@
 
     function writeSettings() {
       require('Storage').writeJSON(FILE, settings);
+      require('notify').loadSettings();
     }
   
     var mainmenu = {
@@ -22,7 +23,7 @@
           writeSettings();
         }
       },
-      /*LANG*/'Test': ()=> require('notify').show({title:'A Test', body:'This is a test.'}),
+      /*LANG*/'Test': ()=> require('notify').show({title:'A Test', body:'This is a test. Drag up and down to scroll. Swipe left or right to dismiss.'}),
     };
     E.showMenu(mainmenu);
   });
