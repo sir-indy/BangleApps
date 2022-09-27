@@ -31,7 +31,7 @@ var temp_img = Graphics.createArrayBuffer(g.getWidth(), g.getHeight(), 16, {msb:
 var settings;
 
 exports.loadSettings = function() {
-  settings = require('Storage').readJSON('notifyover.settings.json', true) || {font: 'Vector19'};
+  settings = require('Storage').readJSON('notifyover.settings.json', true) || {font: '12x20'};
 }
 exports.loadSettings();
 
@@ -63,33 +63,35 @@ exports.show = function(options) {
   if (options.on) { Bangle.setLocked(false); }
   
   var bodyFont = settings.font;
-  var pad_rect = 8, pad_lines = 12;
-  var lines = [];
+  var pad = {'rect':6, 'lines':10};
+  var r = {'outer':pad.lines, 'inner':pad.lines - pad.rect/2};
+  //var lines = [];
   g.setFont(bodyFont);
+  
+  var title = g.wrapString(options.title||'', g.getWidth()-pad.lines);
+  var lines = g.wrapString(options.body, g.getWidth()-pad.lines);
+  
+  var source_height = 8+4;
+  var title_height = g.getFontHeight() * title.length + pad.lines/2 + source_height;
+  var lines_height = g.getFontHeight() * lines.length + pad.lines;
 
-  lines = g.wrapString(options.title||'', g.getWidth()-pad_lines);
-  var titleCnt = lines.length;
-
-  lines = lines.concat(
-    g.wrapString(options.body, g.getWidth()-pad_lines)
-  );
-
-  var max_height = lines.length * g.getFontHeight() + pad_lines;
+  var max_height = title_height + lines_height + pad.rect/2;
+  console.log(max_height);
   max_scroll = g.getHeight() - max_height;
 
-  lines = lines.join('\n');
-  var title_height = g.getFontHeight() * titleCnt;
-  
   img = Graphics.createArrayBuffer(g.getWidth(), max_height, 16, {msb:true})
     .setColor(g.theme.bgH)
-    .fillRect({x:0, y:0, x2:g.getWidth(), y2:max_height, r:pad_rect/2})
+    .fillRect({x:0, y:0, x2:g.getWidth()-1, y2:max_height-1, r:r.outer})
     .setColor(g.theme.bg)
-    .fillRect({x:pad_rect/2, y:title_height + pad_rect/2, x2:g.getWidth() - pad_rect/2, y2:max_height - pad_rect/2, r:pad_rect/2})
+    .fillRect({x:pad.rect/2, y:title_height, x2:g.getWidth() - pad.rect/2-1, y2:max_height - pad.rect/2-1, r:r.inner})
     .setColor(g.theme.fg)
     .setFont(bodyFont)
     .setBgColor(g.theme.bg)
     .setFontAlign(0, -1)
-    .drawString(lines, g.getWidth()/2, pad_lines/2);
+    .drawString(title.join('\n'), g.getWidth()/2, source_height)
+    .drawString(lines.join('\n'), g.getWidth()/2, title_height + pad.lines/2)
+    .setFont('6x8')
+    .drawString(options.src, g.getWidth()/2, 2);
 
   y_pos = 0;
   Bangle.setLCDOverlay(img, 0, y_pos);
