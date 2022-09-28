@@ -1,38 +1,14 @@
-/**
-
-GB({'t':'notify','id':1575479849,'src':'Hangouts','title':'A Name','body':'Hello I am a long message wobble wobble wobble flamingo temperature diskette Hello I am a long message wobble wobble wobble flamingo temperature diskette'})
-
-GB({'t':'notify','id':4876532554,'src':'Whatsapp','title':'A Name','body':'Short Message', 'subject':'Short Subject'})
-
-*/
-/**
- options = {
-   on : bool // turn screen on, default true
-   size : int // height of notification, default 80 (max)
-   title : string // optional title
-   id // optional notification ID, used with hide()
-   src : string // optional source name
-   body : string // optional body text
-   icon : string // optional icon (image string)
-   render : function(y) // function callback to render
-   bgColor : int/string // optional background color (default black)
-   titleBgColor : int/string // optional background color for title (default black)
-   onHide : function() // callback when notification is hidden
- }
-*/
-
 var y_pos;
 var id;
 var img;
 var hideCallback;
 var max_scroll;
 var timeout;
-var temp_img = Graphics.createArrayBuffer(g.getWidth(), g.getHeight(), 8, {msb:true});
 var settings;
 
 exports.loadSettings = function() {
   settings = require('Storage').readJSON('notifyover.settings.json', true) || {font: '12x20'};
-}
+};
 exports.loadSettings();
 
 function onDrag(e) {
@@ -41,10 +17,8 @@ function onDrag(e) {
     y_pos = E.clip(y_pos, 0, max_scroll);
     Bangle.setLCDOverlay(img, 0, y_pos);
   } else {
-    //TODO: Replace this when setLCDOverlay negative position fixed
     y_pos = E.clip(y_pos, max_scroll, 0);
-    temp_img.drawImage(img, 0, y_pos);
-    Bangle.setLCDOverlay(temp_img, 0, 0);
+    Bangle.setLCDOverlay(img, 0, y_pos);
   }
 }
 
@@ -60,7 +34,10 @@ exports.show = function(options) {
   if (options.on===undefined) options.on = true;
   id = ('id' in options)?options.id:null;
 
-  if (options.on) { Bangle.setLocked(false); }
+  if (options.on) { 
+    Bangle.setLocked(false);
+    Bangle.setLCDBrightness(1);
+  }
   
   var bodyFont = settings.font;
   var pad = {'rect':6, 'lines':10};
