@@ -13,10 +13,10 @@ exports.loadSettings();
 
 function onDrag(e) {
   y_pos += e.dy;
-  if (max_scroll > 0) {
+  if (max_scroll > 0) { // image smaller than screen
     y_pos = E.clip(y_pos, 0, max_scroll);
     Bangle.setLCDOverlay(img, 0, y_pos);
-  } else {
+  } else { // image larger than screen
     y_pos = E.clip(y_pos, max_scroll, 0);
     Bangle.setLCDOverlay(img, 0, y_pos);
   }
@@ -34,34 +34,40 @@ exports.show = function(options) {
   if (options.on===undefined) options.on = true;
   id = ('id' in options)?options.id:null;
 
-  if (options.on) { 
+  if (options.on) {
     Bangle.setLocked(false);
     Bangle.setLCDBrightness(1);
   }
-  
-  var bodyFont = settings.font;
+
   var pad = {'rect':6, 'lines':10};
   var r = {'outer':pad.lines, 'inner':pad.lines - pad.rect/2};
-  //var lines = [];
-  g.setFont(bodyFont);
-  
+  g.setFont(settings.font);
+
   var title = g.wrapString(options.title||'', g.getWidth()-pad.lines);
   var lines = g.wrapString(options.body, g.getWidth()-pad.lines);
-  
+
+  // clip long titles to max 100 pixels
+  var max_title_count = Math.floor(100 / g.getFontHeight());
+  if (title.length > max_title_count) { title = title.slice(0, max_title_count); }
   var source_height = 8+4;
   var title_height = g.getFontHeight() * title.length + pad.lines/2 + source_height;
+
+  //clip long message to total size 300 pixels
+  var max_lines_count = Math.floor((300 - title_height) / g.getFontHeight());
+  if (lines.length > max_lines_count) { lines = lines.slice(0, max_lines_count); }
   var lines_height = g.getFontHeight() * lines.length + pad.lines;
 
-  var max_height = title_height + lines_height + pad.rect/2;
-  max_scroll = g.getHeight() - max_height;
+  var total_height = title_height + lines_height + pad.rect/2;
+  max_scroll = g.getHeight() - total_height;
 
-  img = Graphics.createArrayBuffer(g.getWidth(), max_height, 8, {msb:true})
+  // draw the notification on offscreen buffer
+  img = Graphics.createArrayBuffer(g.getWidth(), total_height, 8, {msb:true})
     .setColor(g.theme.bgH)
-    .fillRect({x:0, y:0, x2:g.getWidth()-1, y2:max_height-1, r:r.outer})
+    .fillRect({x:0, y:0, x2:g.getWidth()-1, y2:total_height-1, r:r.outer})
     .setColor(g.theme.bg)
-    .fillRect({x:pad.rect/2, y:title_height, x2:g.getWidth() - pad.rect/2-1, y2:max_height - pad.rect/2-1, r:r.inner})
+    .fillRect({x:pad.rect/2, y:title_height, x2:g.getWidth() - pad.rect/2-1, y2:total_height - pad.rect/2-1, r:r.inner})
     .setColor(g.theme.fg)
-    .setFont(bodyFont)
+    .setFont(settings.font)
     .setBgColor(g.theme.bg)
     .setFontAlign(0, -1)
     .drawString(title.join('\n'), g.getWidth()/2, source_height)
