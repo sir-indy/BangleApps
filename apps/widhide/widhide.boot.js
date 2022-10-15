@@ -59,7 +59,7 @@ Bangle.on("swipe", (_, d) => {
     return;
   }
   function anim() {
-    Bangle.widgetBuffer.offset += d;
+    Bangle.widgetBuffer.offset += d*10; // *10 to make the animation quicker. Just a suggestion! :) Good work on this!
     Bangle.setLCDOverlay(Bangle.widgetBuffer, 0, Bangle.widgetBuffer.offset);
     if (Bangle.widgetBuffer.offset >= 0 || Bangle.widgetBuffer.offset <= -24) {
       clearTimeout(animTimeout);
