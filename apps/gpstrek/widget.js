@@ -1,6 +1,7 @@
 (() => {
 const STORAGE=require('Storage');
 let state = STORAGE.readJSON("gpstrek.state.json")||{};
+let bgChanged = false;
 
 function saveState(){
   state.saved = Date.now();
@@ -8,7 +9,7 @@ function saveState(){
 }
 
 E.on("kill",()=>{
-  if (state.active){
+  if (bgChanged){
     saveState();
   }
 });
@@ -22,18 +23,14 @@ function onGPS(fix) {
   if(fix.fix) state.currentPos = fix;
 }
 
-Bangle.on('accel', function(e) {
-  state.acc = e;
-});
-
 function onMag(e) {
-  if (!state.compassHeading) state.compassHeading = e.heading;
-  
+  if (!state.compassHeading) state.compassHeading = 360-e.heading;
+
   //if (a+180)mod 360 == b then
   //return (a+b)/2 mod 360 and ((a+b)/2 mod 360) + 180 (they are both the solution, so you may choose one depending if you prefer counterclockwise or clockwise direction)
 //else
   //return arctan(  (sin(a)+sin(b)) / (cos(a)+cos(b) )
-  
+
   /*
   let average;
   let a = radians(compassHeading);
@@ -72,27 +69,56 @@ function onPressure(e) {
   }
 }
 
-function start(){
+function onAcc (e){
+  state.acc = e;
+}
+
+function start(bg){
+  Bangle.removeListener('GPS', onGPS);
+  Bangle.removeListener("HRM", onPulse);
+  Bangle.removeListener("mag", onMag);
+  Bangle.removeListener("step", onStep);
+  Bangle.removeListener("pressure", onPressure);
+  Bangle.removeListener('accel', onAcc);
   Bangle.on('GPS', onGPS);
   Bangle.on("HRM", onPulse);
   Bangle.on("mag", onMag);
   Bangle.on("step", onStep);
   Bangle.on("pressure", onPressure);
+  Bangle.on('accel', onAcc);
 
   Bangle.setGPSPower(1, "gpstrek");
   Bangle.setHRMPower(1, "gpstrek");
   Bangle.setCompassPower(1, "gpstrek");
   Bangle.setBarometerPower(1, "gpstrek");
-  state.active = true;
+  if (bg){
+    if (!state.active) bgChanged = true;
+    state.active = true;
+    saveState();
+  }
   Bangle.drawWidgets();
 }
 
-function stop(){
-  state.active = false;
+function stop(bg){
+  if (bg){
+    if (state.active) bgChanged = true;
+    state.active = false;
+  } else if (!state.active) {
+    Bangle.setGPSPower(0, "gpstrek");
+    Bangle.setHRMPower(0, "gpstrek");
+    Bangle.setCompassPower(0, "gpstrek");
+    Bangle.setBarometerPower(0, "gpstrek");
+    Bangle.removeListener('GPS', onGPS);
+    Bangle.removeListener("HRM", onPulse);
+    Bangle.removeListener("mag", onMag);
+    Bangle.removeListener("step", onStep);
+    Bangle.removeListener("pressure", onPressure);
+    Bangle.removeListener('accel', onAcc);
+  }
   saveState();
   Bangle.drawWidgets();
 }
-  
+
 function initState(){
   //cleanup volatile state here
   state.currentPos={};
@@ -107,7 +133,7 @@ if (state.saved && state.saved < Date.now() - 60000){
 }
 
 if (state.active){
-  start();
+  start(false);
 }
 
 WIDGETS["gpstrek"]={

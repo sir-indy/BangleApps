@@ -6,8 +6,8 @@ if (showWidgets){
   Bangle.loadWidgets();
 }
 
-let state = WIDGETS["gpstrek"].getState();
-WIDGETS["gpstrek"].start();
+let state = WIDGETS.gpstrek.getState();
+WIDGETS.gpstrek.start(false);
 
 function parseNumber(toParse){
   if (toParse.includes(".")) return parseFloat(toParse);
@@ -318,16 +318,24 @@ function triangle (x, y, width, height){
   ];
 }
 
+function onSwipe(dir){
+  if (dir < 0) {
+    nextScreen();
+  } else if (dir > 0) {
+    switchMenu();
+  } else {
+    nextScreen();
+  }
+}
+
 function setButtons(){
-  Bangle.setUI("leftright", (dir)=>{
-    if (dir < 0) {
-      nextScreen();
-    } else if (dir > 0) {
-      switchMenu();
-    } else {
-      nextScreen();
-    }
-  });
+  let options = {
+    mode: "custom",
+    swipe: onSwipe,
+    btn: nextScreen,
+    touch: nextScreen
+  };
+  Bangle.setUI(options);
 }
 
 function getApproxFileSize(name){
@@ -469,10 +477,9 @@ function showRouteSelector (){
     }
   };
 
-  for (let c of STORAGE.list((/\.trf$/))){
-    let file = c;
-    menu[file] = ()=>{handleLoading(file);};
-  }
+  STORAGE.list(/\.trf$/).forEach((file)=>{
+     menu[file] = ()=>{handleLoading(file);};
+  });
 
   E.showMenu(menu);
 }
@@ -535,14 +542,14 @@ function showWaypointSelector(){
     }
   };
 
-  for (let c in waypoints){
+  waypoints.forEach((wp,c)=>{
     menu[waypoints[c].name] = function (){
       state.waypoint = waypoints[c];
       state.waypointIndex = c;
       state.route = null;
       removeMenu();
     };
-  }
+  });
 
   E.showMenu(menu);
 }
@@ -582,6 +589,18 @@ function showWaypointMenu(){
   E.showMenu(menu);
 }
 
+function showBackgroundMenu(){
+  let menu = {
+    "" : {
+      "title" : "Background",
+      back : showMenu,
+    },
+    "Start" : ()=>{ E.showPrompt("Start?").then((v)=>{ if (v) {WIDGETS.gpstrek.start(true); removeMenu();} else {E.showMenu(mainmenu);}});},
+    "Stop" : ()=>{ E.showPrompt("Stop?").then((v)=>{ if (v) {WIDGETS.gpstrek.stop(true); removeMenu();} else {E.showMenu(mainmenu);}});},
+  };
+  E.showMenu(menu);
+}
+
 function showMenu(){
   var mainmenu = {
     "" : {
@@ -590,11 +609,10 @@ function showMenu(){
     },
     "Route" : showRouteMenu,
     "Waypoint" : showWaypointMenu,
+    "Background" : showBackgroundMenu,
     "Calibration": showCalibrationMenu,
-    "Start" : ()=>{ E.showPrompt("Start?").then((v)=>{ if (v) {state.active = true; removeMenu();} else {E.showMenu(mainmenu);}});},
-    "Stop" : ()=>{ E.showPrompt("Stop?").then((v)=>{ if (v) {WIDGETS["gpstrek"].stop(); removeMenu();} else {E.showMenu(mainmenu);}});},
-    "Reset" : ()=>{ E.showPrompt("Do Reset?").then((v)=>{ if (v) {WIDGETS["gpstrek"].resetState(); removeMenu();} else {E.showMenu(mainmenu);}});},
-    "Slices" : {
+    "Reset" : ()=>{ E.showPrompt("Do Reset?").then((v)=>{ if (v) {WIDGETS.gpstrek.resetState(); removeMenu();} else {E.showMenu(mainmenu);}});},
+    "Info rows" : {
       value : numberOfSlices,
       min:1,max:6,step:1,
       onchange : v => { setNumberOfSlices(v); }
@@ -665,7 +683,7 @@ const compassSliceData = {
   },
   getCourse: function (){
     if(compassSliceData.getCourseType() == "GPS") return state.currentPos.course;
-    return state.compassHeading?state.compassHeading:undefined;
+    return state.compassHeading?360-state.compassHeading:undefined;
   },
   getPoints: function (){
     let points = [];
