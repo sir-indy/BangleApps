@@ -1,0 +1,18 @@
+{
+  "id":"boldly_going",
+  "name":"Boldly Going Clock",
+  "shortName": "Boldly Going",
+  "version": "0.01",
+  "description": "A clock for seeking out new life, and new civilizations...",
+  "readme": "README.md",
+  "icon":"boldly_going.png",
+  "screenshots": [{"url":"boldly-s1.png"},{"url":"boldly-s2.png"}],
+  "type": "clock",
+  "tags": "clock",
+  "supports": ["BANGLEJS2"],
+  "allow_emulator": true,
+  "storage": [
+    {"name":"boldly_going.app.js","url":"app.js"},
+    {"name":"boldly_going.img","url":"icon.js","evaluate":true}
+  ]
+}
