@@ -8,6 +8,8 @@
  * Date: 05/2022
  */
 
+let appSettings = require("Storage").readJSON("shadowclk.json", 1) || {};
+
 const Layout = require("Layout");
 const alarm = require("sched");
 const TIMER_IDX = "smpltmr";
@@ -23,7 +25,7 @@ function formatTime(s) {
   }
 }
 
-var seconds = 5 * 60; // Default to 5 minutes
+var seconds = (appSettings.defaultTime !== undefined ? appSettings.defaultTime : 5) * 60; // Load default from settings
 var drawTimeout;
 let dy = 0;
 //var timerRunning = false;
@@ -31,7 +33,7 @@ function timerRunning() {
   return (alarm.getTimeToAlarm(alarm.getAlarm(TIMER_IDX)) != undefined);
 }
 const imgArrowUp = atob("CQmBAAgOBwfD47ndx+OA");
-const imgArrowDown = atob("CQkBHA4iMRweD4/H94A=");
+const imgArrowDown = atob("CQmBAOPx3c7j4fBwOAgA");
 const imgPause = atob("GBiBAP+B//+B//+B//+B//+B//+B//+B//+B//+B//+B//+B//+B//+B//+B//+B//+B//+B//+B//+B//+B//+B//+B//+B//+B/w==");
 const imgPlay = atob("GBiBAIAAAOAAAPgAAP4AAP+AAP/gAP/4AP/+AP//gP//4P//+P///v///v//+P//4P//gP/+AP/4AP/gAP+AAP4AAPgAAOAAAIAAAA==");
 
