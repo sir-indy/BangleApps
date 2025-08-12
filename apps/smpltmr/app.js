@@ -9,7 +9,7 @@
  */
 
 const Layout = require("Layout");
-const alarm = require("sched")
+const alarm = require("sched");
 const TIMER_IDX = "smpltmr";
 
 const secondsToTime = (s) => new Object({h:Math.floor((s/3600) % 24), m:Math.floor((s/60) % 60), s:Math.floor(s % 60)});
@@ -25,24 +25,32 @@ function formatTime(s) {
 
 var seconds = 5 * 60; // Default to 5 minutes
 var drawTimeout;
+let dy = 0;
 //var timerRunning = false;
 function timerRunning() {
-  return (alarm.getTimeToAlarm(alarm.getAlarm(TIMER_IDX)) != undefined)
+  return (alarm.getTimeToAlarm(alarm.getAlarm(TIMER_IDX)) != undefined);
 }
-const imgArrow = atob("CQmBAAgOBwfD47ndx+OA");
+const imgArrowUp = atob("CQmBAAgOBwfD47ndx+OA");
+const imgArrowDown = atob("CQkBHA4iMRweD4/H94A=");
 const imgPause = atob("GBiBAP+B//+B//+B//+B//+B//+B//+B//+B//+B//+B//+B//+B//+B//+B//+B//+B//+B//+B//+B//+B//+B//+B//+B//+B/w==");
 const imgPlay = atob("GBiBAIAAAOAAAPgAAP4AAP+AAP/gAP/4AP/+AP//gP//4P//+P///v///v//+P//4P//gP/+AP/4AP/gAP+AAP4AAPgAAOAAAIAAAA==");
 
-function onDrag(event) {
+function onDrag(e) {
+  let y_limit = 24;
   if (!timerRunning()) {
-    Bangle.buzz(40, 0.3);
-    var diff = -Math.round(event.dy/5);
-    if (event.x < timePickerLayout.hours.w) {
+    dy += e.dy; // after a certain amount of dragging up/down update TimePicker
+    if (!e.b) dy = 0;
+    var diff = 1;
+    if (e.x < timePickerLayout.hours.w) {
       diff *= 3600;
-    } else if (event.x > timePickerLayout.mins.x && event.x < timePickerLayout.secs.x) {
+    } else if (e.x > timePickerLayout.mins.x && e.x < timePickerLayout.secs.x) {
       diff *= 60;
     }
-    updateTimePicker(diff);
+    while (Math.abs(dy) > y_limit) {
+      if (dy > 0) { dy -= y_limit; updateTimePicker(-diff); }
+      else { dy += y_limit; updateTimePicker(diff); }
+      Bangle.buzz(20);
+    }
   }
 }
 
@@ -136,21 +144,21 @@ var timePickerLayout = new Layout({
     {type:"h", c: [
       {type:"v", width:g.getWidth()/3, c: [
         {type:"txt", font:"6x8", label:/*LANG*/"Hours"},
-        {type:"img", pad:8, src:imgArrow},
+        {type:"img", pad:8, src:imgArrowUp},
         {type:"txt", font:"20%", label:"00", id:"hours", filly:1, fillx:1},
-        {type:"img", pad:8, src:imgArrow, r:2}
+        {type:"img", pad:8, src:imgArrowDown}
       ]},
       {type:"v", width:g.getWidth()/3, c: [
         {type:"txt", font:"6x8", label:/*LANG*/"Minutes"},
-        {type:"img", pad:8, src:imgArrow},
+        {type:"img", pad:8, src:imgArrowUp},
         {type:"txt", font:"20%", label:"00", id:"mins", filly:1, fillx:1},
-        {type:"img", pad:8, src:imgArrow, r:2}
+        {type:"img", pad:8, src:imgArrowDown}
       ]},
       {type:"v", width:g.getWidth()/3, c: [
         {type:"txt", font:"6x8", label:/*LANG*/"Seconds"},
-        {type:"img", pad:8, src:imgArrow},
+        {type:"img", pad:8, src:imgArrowUp},
         {type:"txt", font:"20%", label:"00", id:"secs", filly:1, fillx:1},
-        {type:"img", pad:8, src:imgArrow, r:2}
+        {type:"img", pad:8, src:imgArrowDown}
       ]},
     ]},
     {type:"btn", src:imgPlay, id:"btnStart", fillx:1 }
@@ -173,15 +181,12 @@ function updateLayoutField(layout, field, value) {
 Bangle.loadWidgets();
 Bangle.drawWidgets();
 
-let uiOptions = {
+Bangle.setUI({
   mode : "custom",
   touch : function(n,e) {onTouch(n,e);},
   drag : function(e) {onDrag(e);},
-};
-if (parseFloat(process.env.VERSION.replace("v","")) < 224.164) {uiOptions.btn = function(n) {onButton();};}
-else {uiOptions.btnRelease = function(n) {onButton();};}
-
-Bangle.setUI(uiOptions);
+  back : function() {},
+});
 
 g.clearRect(Bangle.appRect);
 if (timerRunning()) {
